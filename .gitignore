@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Ambiente / editores
+.DS_Store
+.idea/
+*.swp
+
+# Saídas temporárias (os resultados versionados ficam em resultados/)
+resultados/*.tmp
