@@ -2,7 +2,18 @@
 
 from __future__ import annotations
 
-from src.benchmark import gerar_lista_sem_duplicatas, gerar_palavras, medir_tempo
+from pathlib import Path
+
+import pytest
+
+from src.benchmark import (
+    DIR_RESULTADOS,
+    DIR_SAIDA_PADRAO,
+    gerar_lista_sem_duplicatas,
+    gerar_palavras,
+    medir_tempo,
+    resolver_diretorio_saida,
+)
 
 
 def test_lista_gerada_nao_tem_duplicatas() -> None:
@@ -31,3 +42,22 @@ def test_medir_tempo_retorna_valores_positivos() -> None:
     assert resultado["tempo_minimo_s"] > 0
     assert resultado["tempo_medio_s"] > 0
     assert resultado["desvio_padrao_s"] >= 0
+
+
+def test_saida_padrao_nao_sobrescreve_resultados_versionados() -> None:
+    assert resolver_diretorio_saida() == DIR_SAIDA_PADRAO
+    assert DIR_SAIDA_PADRAO != DIR_RESULTADOS
+    assert DIR_RESULTADOS in DIR_SAIDA_PADRAO.parents
+
+
+def test_publicar_grava_nos_resultados_versionados() -> None:
+    assert resolver_diretorio_saida(publicar=True) == DIR_RESULTADOS
+
+
+def test_saida_customizada_e_resolvida(tmp_path: Path) -> None:
+    assert resolver_diretorio_saida(tmp_path) == tmp_path.resolve()
+
+
+def test_publicar_e_saida_sao_exclusivos(tmp_path: Path) -> None:
+    with pytest.raises(ValueError):
+        resolver_diretorio_saida(tmp_path, publicar=True)

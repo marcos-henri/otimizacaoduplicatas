@@ -1,6 +1,12 @@
 # Resultados dos benchmarks
 
-Esta pasta é gerada por `python3 -m src.benchmark`.
+Esta pasta guarda os resultados de referência, versionados no repositório.
+Eles só são sobrescritos quando o benchmark é executado com a opção
+`--publicar`.
+
+Uma execução comum (`python3 -m src.benchmark`) grava em `resultados/local/`,
+que é ignorado pelo git, para não sujar o repositório. Também é possível
+escolher outro destino com `--saida DIR`.
 
 | Arquivo | Conteúdo |
 |---|---|
@@ -24,7 +30,11 @@ pesados rodando ao mesmo tempo.
 ## Reprodução
 
 ```bash
+# grava em resultados/local/ (ignorado pelo git)
 python3 -m src.benchmark
+
+# atualiza os resultados de referência desta pasta
+python3 -m src.benchmark --publicar
 ```
 
 Para uma execução rápida:

@@ -1,12 +1,16 @@
 """Benchmarks reprodutíveis para as versões original e otimizada.
 
 Uso:
-    python -m src.benchmark            # execução completa
-    python -m src.benchmark --rapido   # execução curta, útil para testar
+    python -m src.benchmark                  # execução completa
+    python -m src.benchmark --rapido         # execução curta, útil para testar
     python -m src.benchmark --sem-grafico
+    python -m src.benchmark --publicar       # atualiza os resultados versionados
 
-Os resultados são gravados em ``resultados/`` (CSV, resumo em Markdown e
-gráficos PNG).
+Por padrão os resultados (CSV, resumo em Markdown e gráficos PNG) são
+gravados em ``resultados/local/``, que é ignorado pelo git. Assim, rodar o
+benchmark não modifica os resultados de referência versionados em
+``resultados/``. Use ``--publicar`` (ou ``--saida``) quando quiser
+deliberadamente substituí-los.
 """
 
 from __future__ import annotations
@@ -28,6 +32,27 @@ from .duplicatas import tem_duplicata, tem_duplicata_hash
 
 RAIZ_PROJETO = Path(__file__).resolve().parent.parent
 DIR_RESULTADOS = RAIZ_PROJETO / "resultados"
+DIR_SAIDA_PADRAO = DIR_RESULTADOS / "local"
+
+
+def resolver_diretorio_saida(
+    saida: Path | None = None,
+    publicar: bool = False,
+) -> Path:
+    """Decide onde os artefatos do benchmark serão gravados.
+
+    O padrão é ``resultados/local/``, ignorado pelo git, para que uma execução
+    comum não altere os resultados de referência versionados em
+    ``resultados/``. Use ``publicar=True`` (ou ``--saida``) para sobrescrever
+    esses arquivos de forma explícita.
+    """
+    if publicar:
+        if saida is not None:
+            raise ValueError("use --publicar ou --saida, não os dois")
+        return DIR_RESULTADOS
+    if saida is not None:
+        return Path(saida).expanduser().resolve()
+    return DIR_SAIDA_PADRAO
 
 
 @dataclass(frozen=True)
@@ -304,6 +329,7 @@ def _dados_por_versao(
 def gerar_graficos(
     medicoes_duplicatas: Sequence[Medicao],
     medicoes_anagramas: Sequence[Medicao],
+    dir_saida: Path = DIR_SAIDA_PADRAO,
 ) -> None:
     """Gera gráficos comparativos em escala linear e log-log."""
     try:
@@ -404,14 +430,14 @@ def gerar_graficos(
     desenhar(
         medicoes_duplicatas,
         "Detecção de duplicatas",
-        DIR_RESULTADOS / "grafico_duplicatas.png",
+        dir_saida / "grafico_duplicatas.png",
         "Original O(n²)",
         "Otimizada com set O(n)",
     )
     desenhar(
         medicoes_anagramas,
         "Agrupamento de anagramas",
-        DIR_RESULTADOS / "grafico_anagramas.png",
+        dir_saida / "grafico_anagramas.png",
         "Original O(n² · k log k)",
         "Otimizada com dict O(n · k log k)",
     )
@@ -437,7 +463,30 @@ def main(argv: Sequence[str] | None = None) -> int:
         default=42,
         help="semente do gerador aleatório (padrão: 42)",
     )
+    parser.add_argument(
+        "--saida",
+        type=Path,
+        default=None,
+        metavar="DIR",
+        help=(
+            "diretório onde os resultados serão gravados "
+            f"(padrão: {DIR_SAIDA_PADRAO.relative_to(RAIZ_PROJETO)})"
+        ),
+    )
+    parser.add_argument(
+        "--publicar",
+        action="store_true",
+        help=(
+            "grava em resultados/ e sobrescreve os resultados versionados "
+            "(use apenas quando quiser atualizar a referência do repositório)"
+        ),
+    )
     args = parser.parse_args(argv)
+
+    if args.publicar and args.saida is not None:
+        parser.error("use --publicar ou --saida, não os dois")
+
+    dir_saida = resolver_diretorio_saida(args.saida, args.publicar)
 
     if args.rapido:
         tamanhos_duplicatas = [200, 400, 800, 1600]
@@ -446,7 +495,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         tamanhos_duplicatas = [500, 1000, 2000, 4000, 8000, 16000]
         tamanhos_anagramas = [100, 200, 400, 800, 1600]
 
-    DIR_RESULTADOS.mkdir(parents=True, exist_ok=True)
+    dir_saida.mkdir(parents=True, exist_ok=True)
+
+    if dir_saida == DIR_RESULTADOS:
+        print("Atenção: os resultados de referência em resultados/ serão sobrescritos.")
+    print("Gravando resultados em:", dir_saida)
+    print()
 
     print("Executando benchmark de detecção de duplicatas...")
     medicoes_duplicatas = benchmark_duplicatas(
@@ -454,7 +508,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     salvar_csv(
         medicoes_duplicatas,
-        DIR_RESULTADOS / "benchmark_duplicatas.csv",
+        dir_saida / "benchmark_duplicatas.csv",
     )
 
     print("Executando benchmark de agrupamento de anagramas...")
@@ -463,22 +517,22 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     salvar_csv(
         medicoes_anagramas,
-        DIR_RESULTADOS / "benchmark_anagramas.csv",
+        dir_saida / "benchmark_anagramas.csv",
     )
 
     resumo = gerar_resumo(
         medicoes_duplicatas,
         medicoes_anagramas,
-        DIR_RESULTADOS / "resumo.md",
+        dir_saida / "resumo.md",
     )
     print()
     print(resumo)
 
     if not args.sem_grafico:
-        gerar_graficos(medicoes_duplicatas, medicoes_anagramas)
-        print("Gráficos salvos em:", DIR_RESULTADOS)
+        gerar_graficos(medicoes_duplicatas, medicoes_anagramas, dir_saida)
+        print("Gráficos salvos em:", dir_saida)
 
-    print("Benchmarks concluídos. Resultados em:", DIR_RESULTADOS)
+    print("Benchmarks concluídos. Resultados em:", dir_saida)
     return 0
 
 

@@ -289,10 +289,13 @@ ambiente):
 
 ```bash
 python3 -m pytest
-python3 -m src.benchmark
+python3 -m src.benchmark              # grava em resultados/local/ (ignorado pelo git)
+python3 -m src.benchmark --publicar   # atualiza os resultados de referência
 ```
 
-Os arquivos gerados ficam em `resultados/`. Para uma execução mais curta:
+Uma execução comum não sobrescreve os resultados versionados: os arquivos
+gerados ficam em `resultados/local/`. A opção `--publicar` regenera os
+arquivos de referência em `resultados/`. Para uma execução mais curta:
 
 ```bash
 python3 -m src.benchmark --rapido

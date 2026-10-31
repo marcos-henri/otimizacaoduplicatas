@@ -47,7 +47,7 @@ arquivo `.devcontainer/devcontainer.json` é usado automaticamente.
 # Testes
 python3 -m pytest
 
-# Benchmark completo (grava CSV, resumo e gráficos em resultados/)
+# Benchmark completo (grava CSV, resumo e gráficos em resultados/local/)
 python3 -m src.benchmark
 
 # Benchmark curto, para testar rapidamente
@@ -55,7 +55,14 @@ python3 -m src.benchmark --rapido
 
 # Benchmark sem gerar gráficos
 python3 -m src.benchmark --sem-grafico
+
+# Atualizar os resultados de referência versionados em resultados/
+python3 -m src.benchmark --publicar
 ```
+
+> Rodar o benchmark sem `--publicar` não altera os arquivos versionados em
+> `resultados/`: a saída vai para `resultados/local/`, que está no
+> `.gitignore`. Use `--saida DIR` para escolher outro diretório.
 
 Com `make`:
 
@@ -63,6 +70,7 @@ Com `make`:
 make test
 make bench
 make bench-rapido
+make bench-publicar
 ```
 
 ## Estrutura
@@ -87,7 +95,8 @@ make bench-rapido
 │   ├── benchmark_anagramas.csv
 │   ├── resumo.md
 │   ├── grafico_duplicatas.png
-│   └── grafico_anagramas.png
+│   ├── grafico_anagramas.png
+│   └── local/                  # saída das execuções locais (ignorado pelo git)
 ├── relatorio/
 │   └── relatorio.md            # relatório de 3 a 5 páginas
 ├── apresentacao/

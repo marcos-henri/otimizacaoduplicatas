@@ -17,3 +17,5 @@ htmlcov/
 
 # Saídas temporárias (os resultados versionados ficam em resultados/)
 resultados/*.tmp
+# Saída padrão de cada execução do benchmark (não versionada)
+resultados/local/
