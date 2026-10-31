@@ -1,0 +1,15 @@
+[project]
+name = "av2-duplicatas-anagramas"
+version = "0.1.0"
+description = "Diagnóstico e primeira otimização de algoritmos de detecção de duplicatas e agrupamento de anagramas"
+requires-python = ">=3.10"
+readme = "README.md"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"

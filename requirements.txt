@@ -1,0 +1,4 @@
+# Dependências do projeto.
+# O devcontainer instala automaticamente este arquivo no postCreateCommand.
+pytest>=8.0,<10
+matplotlib>=3.8,<4
