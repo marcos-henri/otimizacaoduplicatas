@@ -1,4 +1,4 @@
-.PHONY: test bench bench-rapido bench-publicar limpar
+.PHONY: test bench bench-rapido bench-publicar limites limpar
 
 test:
 	python3 -m pytest
@@ -11,6 +11,9 @@ bench-rapido:
 
 bench-publicar:
 	python3 -m src.benchmark --publicar
+
+limites:
+	python3 -m src.limites
 
 limpar:
 	rm -rf .pytest_cache __pycache__ src/__pycache__ tests/__pycache__
