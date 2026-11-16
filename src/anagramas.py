@@ -40,6 +40,22 @@ def chave_anagrama(palavra: str, ignorar_acentos: bool = True) -> tuple[str, ...
     return tuple(sorted(normalizar_palavra(palavra, ignorar_acentos)))
 
 
+def chave_anagrama_contagem(palavra: str) -> tuple[int, ...]:
+    """Retorna uma chave por contagem para palavras normalizadas em a-z.
+
+    A construção percorre a palavra uma vez, portanto custa O(k), mas o
+    contrato é mais restrito que o da chave geral: acentos, pontuação e
+    caracteres fora de ``a-z`` não são aceitos.
+    """
+    palavra_normalizada = normalizar_palavra(palavra)
+    if any(caractere not in "abcdefghijklmnopqrstuvwxyz" for caractere in palavra_normalizada):
+        raise ValueError("a chave por contagem aceita apenas letras a-z")
+    contagem = [0] * 26
+    for caractere in palavra_normalizada:
+        contagem[ord(caractere) - ord("a")] += 1
+    return tuple(contagem)
+
+
 def sao_anagramas(a: str, b: str, ignorar_acentos: bool = True) -> bool:
     """Verifica se duas palavras são anagramas após a normalização."""
     return chave_anagrama(a, ignorar_acentos) == chave_anagrama(b, ignorar_acentos)
@@ -92,4 +108,13 @@ def agrupar_anagramas_hash(
         chave = chave_anagrama(palavra, ignorar_acentos)
         grupos.setdefault(chave, []).append(palavra)
 
+    return list(grupos.values())
+
+
+def agrupar_anagramas_contagem(palavras: Iterable[str]) -> list[list[str]]:
+    """Agrupa anagramas usando chave por contagem, em O(n · k) esperado."""
+    grupos: dict[tuple[int, ...], list[str]] = {}
+    for palavra in palavras:
+        chave = chave_anagrama_contagem(palavra)
+        grupos.setdefault(chave, []).append(palavra)
     return list(grupos.values())

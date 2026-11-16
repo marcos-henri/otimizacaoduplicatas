@@ -8,9 +8,11 @@ import string
 import pytest
 
 from src.anagramas import (
+    agrupar_anagramas_contagem,
     agrupar_anagramas_hash,
     agrupar_anagramas_original,
     chave_anagrama,
+    chave_anagrama_contagem,
     normalizar_palavra,
     sao_anagramas,
 )
@@ -43,6 +45,17 @@ def test_chave_de_anagrama() -> None:
     assert chave_anagrama("amor") == tuple(sorted("amor"))
     assert chave_anagrama("amor") == chave_anagrama("roma")
     assert chave_anagrama("Ação") == chave_anagrama("acao")
+
+
+def test_chave_por_contagem_preserva_equivalencia() -> None:
+    assert chave_anagrama_contagem("Ação!") == chave_anagrama_contagem("acao")
+
+
+def test_agrupar_por_contagem_preserva_grupos() -> None:
+    palavras = ["listen", "silent", "enlist", "amor", "roma"]
+    assert particionar(agrupar_anagramas_contagem(palavras)) == particionar(
+        agrupar_anagramas_original(palavras)
+    )
 
 
 @pytest.mark.parametrize(
@@ -82,6 +95,7 @@ def test_agrupamento_preserva_palavras_originais() -> None:
 def test_lista_vazia() -> None:
     assert agrupar_anagramas_original([]) == []
     assert agrupar_anagramas_hash([]) == []
+    assert agrupar_anagramas_contagem([]) == []
 
 
 def test_versoes_concordam_em_casos_fixos() -> None:

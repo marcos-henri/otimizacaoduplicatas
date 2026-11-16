@@ -163,6 +163,9 @@ versão otimizada aproximadamente dobra (O(n)).
   [`relatorio/Relatorio_duplicatas_anagramas_AV2.docx`](relatorio/Relatorio_duplicatas_anagramas_AV2.docx))
 - Relatório atualizado: [`relatorio/Relatorio_duplicatas_anagramas_AV2_atualizado.docx`](relatorio/Relatorio_duplicatas_anagramas_AV2_atualizado.docx),
   com a explicação do aquecimento usado nas medições.
+- Relatório da segunda entrega: [`relatorio/Relatorio_Entrega_2_Otimizacao_Final.pdf`](relatorio/Relatorio_Entrega_2_Otimizacao_Final.pdf)
+  (versão editável em
+  [`relatorio/Relatorio_Entrega_2_Otimizacao_Final.docx`](relatorio/Relatorio_Entrega_2_Otimizacao_Final.docx)).
 - Slides: [`apresentacao/slides.pdf`](apresentacao/slides.pdf) (fonte em
   [`apresentacao/slides.md`](apresentacao/slides.md), 31 slides com as duas partes)
 - Roteiro da Parte 1 (10 min, dividido entre William, Kelvin e Marcos):
